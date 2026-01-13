@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Numeric
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, validates
 from sqlalchemy_serializer import SerializerMixin
 from datetime import datetime
 
@@ -28,4 +28,10 @@ class Order(db.Model, SerializerMixin):
 
     def __repr__(self):
         return f'<Order {self.order_id}>'
+
+    @validates('total_amount')
+    def validate_total_amount(self, key, amount):
+        if amount is None or float(amount) < 0:
+            raise ValueError('total_amount must be non-negative')
+        return amount
 

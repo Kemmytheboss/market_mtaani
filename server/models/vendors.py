@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, DECIMAL
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, validates
 from sqlalchemy_serializer import SerializerMixin
 
 from . import db
@@ -18,3 +18,15 @@ class Vendor(db.Model, SerializerMixin):
     products = relationship('Product', back_populates='vendor', cascade='all, delete-orphan')
 
     serialize_rules = ('-user.vendor', '-products.vendor')
+
+    @validates('rating')
+    def validate_rating(self, key, rating):
+        if rating is None:
+            return rating
+        try:
+            r = float(rating)
+        except Exception:
+            raise ValueError('rating must be numeric')
+        if r < 0 or r > 5:
+            raise ValueError('rating must be between 0 and 5')
+        return rating

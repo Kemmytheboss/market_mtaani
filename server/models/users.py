@@ -28,3 +28,9 @@ class User(db.Model, SerializerMixin):
         if '@' not in address:
             raise ValueError('Invalid email')
         return address
+
+    @validates('full_name')
+    def validate_full_name(self, key, name):
+        if not name or not name.strip():
+            raise ValueError('full_name is required')
+        return name.strip()
