@@ -27,7 +27,7 @@ class Customers(Resource):
             customer = Customer.query.get_or_404(id)
             return jsonify(customer.to_dict())
 
-        def put(self, id):
+        def patch(self, id):
             customer = Customer.query.get_or_404(id)
             data = request.get_json()
             name = data.get('name')

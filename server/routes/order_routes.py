@@ -40,7 +40,7 @@ class OrderById(Resource):
         order = Order.query.get_or_404(id)
         return jsonify(order.to_dict())
 
-    def put(self, id):
+    def patch(self, id):
         order = Order.query.get_or_404(id)
         data = request.get_json()
 
