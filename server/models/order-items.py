@@ -1,32 +1,21 @@
-from app import db
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Column, Integer, ForeignKey, Numeric
+from sqlalchemy.orm import relationship
+from datetime import datetime
+from app import db  # assuming you import db from your app module
 
 class OrderItem(db.Model):
     __tablename__ = 'order_items'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
+    
+    # Foreign keys
+    order_id = Column(Integer, ForeignKey('orders.order_id'), nullable=False)
+    product_id = Column(Integer, ForeignKey('products.product_id'), nullable=False)
 
-    order_id = db.Column(
-        db.Integer,
-        db.ForeignKey('orders.id'),
-        nullable=False
-    )
-
-    product_id = db.Column(
-        db.Integer,
-        db.ForeignKey('products.id'),
-        nullable=False
-    )
-
-    vendor_id = db.Column(
-        db.Integer,
-        db.ForeignKey('vendors.id'),
-        nullable=False
-    )
-
-    quantity = db.Column(db.Integer, nullable=False)
-    price = db.Column(db.Numeric(10, 2), nullable=False)
+    quantity = Column(Integer, nullable=False)
+    price = Column(Numeric(10, 2), nullable=False)
 
     # Relationships
-    order = db.relationship('Order', backref='order_items')
-    product = db.relationship('Product', backref='order_items')
-    vendor = db.relationship('Vendor', backref='order_items')
+    order = relationship("Order", back_populates="order_items")
+    product = relationship("Product", back_populates="order_items")
