@@ -34,3 +34,33 @@ class Orders(Resource):
         except Exception as e:
             db.session.rollback()
             return {"error": str(e)}, 400
+        
+class OrderById(Resource):
+    def get(self, id):
+        order = Order.query.get_or_404(id)
+        return jsonify(order.to_dict())
+
+    def put(self, id):
+        order = Order.query.get_or_404(id)
+        data = request.get_json()
+
+        status = data.get('status')
+        if status:
+            order.status = status
+
+        try:
+            db.session.commit()
+            return jsonify(order.to_dict())
+        except Exception as e:
+            db.session.rollback()
+            return {"error": str(e)}, 400
+
+    def delete(self, id):
+        order = Order.query.get_or_404(id)
+        try:
+            db.session.delete(order)
+            db.session.commit()
+            return '', 204
+        except Exception as e:
+            db.session.rollback()
+            return {"error": str(e)}, 400
