@@ -23,3 +23,29 @@ class Customers(Resource):
         return jsonify(new_customer.to_dict()), 201
     
     class CustomerById(Resource):
+        def get(self, id):
+            customer = Customer.query.get_or_404(id)
+            return jsonify(customer.to_dict())
+
+        def put(self, id):
+            customer = Customer.query.get_or_404(id)
+            data = request.get_json()
+            name = data.get('name')
+            customer_type = data.get('customer_type')
+
+            if customer_type and customer_type not in VALID_CUSTOMER_TYPES:
+                return {"error": "Invalid customer type. Must be WHOLESALER or RETAILER."}, 400
+
+            if name:
+                customer.name = name
+            if customer_type:
+                customer.customer_type = customer_type
+
+            db.session.commit()
+            return jsonify(customer.to_dict())
+
+        def delete(self, id):
+            customer = Customer.query.get_or_404(id)
+            db.session.delete(customer)
+            db.session.commit()
+            return '', 204
