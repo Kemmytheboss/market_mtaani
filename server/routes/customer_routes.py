@@ -22,4 +22,4 @@ class Customers(Resource):
         db.session.commit()
         return jsonify(new_customer.to_dict()), 201
     
-    
+    class CustomerById(Resource):
