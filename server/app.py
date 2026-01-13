@@ -1,8 +1,14 @@
+
 import os
 from flask import Flask
-from flask_migrate import Migrate
 
 from server.models import db
+
+
+try:
+	from flask_migrate import Migrate
+except Exception:
+	Migrate = None
 
 
 def create_app(config_object=None):
@@ -11,7 +17,8 @@ def create_app(config_object=None):
 	app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 	db.init_app(app)
-	Migrate(app, db)
+	if Migrate is not None:
+		Migrate(app, db)
 
 	return app
 
