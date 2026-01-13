@@ -15,4 +15,22 @@ class Orders(Resource):
             query = query.filter_by(status=status)
         return jsonify([order.to_dict() for order in query.all()])
     
-    
+    def post(self):
+        data  = request.get_json()
+
+        customer = Customer.query.get(data.get('customer_id'))
+
+        if not customer:
+            return {"error": "Customer not found."}, 404
+        
+        new_order = Order(
+            customer_id=data.get('customer_id'),
+            status=data.get('status', 'PENDING'))
+        
+        try: 
+            db.session.add(new_order)
+            db.session.commit()
+            return jsonify(new_order.to_dict()), 201
+        except Exception as e:
+            db.session.rollback()
+            return {"error": str(e)}, 400
