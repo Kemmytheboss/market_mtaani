@@ -1,2 +1,82 @@
+############################
+# NEXT.JS / REACT
+############################
+.next/
+out/
+build/
+node_modules/
 
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+.cache/
+
+############################
+# ENVIRONMENT VARIABLES
+############################
+.env
+.env.*
+!.env.example
+
+############################
+# PYTHON / FLASK
+############################
+__pycache__/
+*.py[cod]
+*$py.class
+
+############################
+# VIRTUAL ENVIRONMENTS
+############################
+venv/
 .venv/
+env/
+ENV/
+
+############################
+# FLASK-SPECIFIC
+############################
+instance/
+.webassets-cache
+migrations/__pycache__/
+
+############################
+# DATABASES & UPLOADS
+############################
+*.sqlite3
+*.db
+uploads/
+
+############################
+# TESTING & COVERAGE
+############################
+.pytest_cache/
+.coverage
+htmlcov/
+
+############################
+# LOGS & TEMP FILES
+############################
+*.log
+*.pid
+*.tmp
+*.swp
+
+############################
+# OS FILES
+############################
+.DS_Store
+Thumbs.db
+
+############################
+# IDE / EDITORS
+############################
+.vscode/
+.idea/
+
+############################
+# DOCKER / DEPLOYMENT
+############################
+docker-compose.override.yml

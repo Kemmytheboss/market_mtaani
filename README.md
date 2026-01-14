@@ -1,105 +1,162 @@
-# Market Mtaani
+# Market Mtaani API
 
-Simple marketplace backend for the Mtaani market app.
+A Flask and React application connecting vendors and customers in Eastleigh Market for easier business discovery and transactions.
 
-Overview
---------
-Market Mtaani is a Flask-based backend that models users, vendors, customers, products, orders and order items. It's intended as a small marketplace API used for teaching and prototyping.
+## Description
 
-Quickstart
-Prerequisites: Python 3.8+, pipenv (recommended) or virtualenv
+Market Mtaani is a full-stack web application that enables vendors to showcase their products and customers to discover and order from local businesses in Eastleigh Market. The platform supports both wholesale and retail customers, with features for product management, order processing, and business verification.
 
-Clone:
+## Setup Instructions
 
-	git clone https://github.com/Kemmytheboss/market_mtaani.git
-	cd market_mtaani
+### Backend Setup
 
-Install dependencies (pipenv):
+1. Clone the repository
 
-	pipenv install
+2. Navigate to the project directory
 
-Activate shell and run the app:
+3. Install dependencies:
+   ```
+   pipenv install
+   pipenv shell
+   ```
 
-	pipenv run flask --app server.app run --host=0.0.0.0 --port=5000
+4. Navigate to the server directory:
+   ```
+   cd server
+   ```
 
-Local development (recommended):
-	# Create and activate virtualenv
-	python3 -m venv .venv
-	. .venv/bin/activate
-	# Install dependencies
-	pip install -r requirements.txt
+5. Initialize the database:
+   ```
+   flask db init
+   flask db migrate -m "Initial migration"
+   flask db upgrade
+   ```
 
-	# Run migrations and seed (safe targets)
-	make migrate
-	make seed-dev
+6. Seed the database:
+   ```
+   python seed.py
+   ```
 
-	# Run tests
-	make test
+7. Run the application:
+   ```
+   python app.py
+   ```
 
-	# Start the app
-	export FLASK_APP=server.app
-	flask run
+The server will run on `http://localhost:5555`
 
-Docker (reproducible dev):
-	docker build -t market_mtaani:dev .
-	docker run --rm -it market_mtaani:dev
+### Frontend Setup
 
-Makefile targets:
-	make venv        # create .venv
-	make install     # install dependencies
-	make migrate     # run migrations
-	make seed-dev    # seed only if using sqlite DB
-	make test        # run pytest
-	make docker-build # build Docker image
-	make clean       # remove .venv and market.db
+1. Navigate to the client directory:
+   ```
+   cd client
+   ```
 
-Or run directly (if you prefer a virtualenv):
+2. Install dependencies:
+   ```
+   npm install
+   ```
 
-	python3 -m venv .venv
-	. .venv/bin/activate
-	pip install -r requirements.txt   # if you prepare requirements
-	export FLASK_APP=server.app
-	flask run
+3. Start the development server:
+   ```
+   npm start
+   ```
 
-Database and seeds
-This project uses Flask SQLAlchemy. A small seeding script is included at `server/seed.py` — run it to create example data (ensure your DB config is set in `server/app.py` or environment variables):
+The client will run on `http://localhost:3000`
 
-	python3 server/seed.py
+## API Endpoints
 
-This project uses Flask SQLAlchemy and Alembic migrations. To create and seed the database:
+### Users
+* `GET /users` - Get all users (supports `?role=vendor` filtering)
+* `GET /users/:id` - Get a specific user
+* `POST /users` - Create a new user
+* `PATCH /users/:id` - Update a user
+* `DELETE /users/:id` - Delete a user
 
-	make migrate
-	make seed-dev
+### Businesses
+* `GET /businesses` - Get all businesses
+* `GET /businesses/:id` - Get a specific business
+* `POST /businesses` - Create a new business
+* `PATCH /businesses/:id` - Update a business
+* `DELETE /businesses/:id` - Delete a business
 
-The seed script will only run if your `DATABASE_URL` is SQLite (default: `market.db`).
+### Products
+* `GET /products` - Get all products
+* `GET /products/:id` - Get a specific product
+* `POST /products` - Create a new product
+* `PATCH /products/:id` - Update a product
+* `DELETE /products/:id` - Delete a product
 
-Models
-------
-- `server/models/users.py` — application users
-- `server/models/vendors.py` — vendor profiles
-- `server/models/customers.py` — customer profiles
-- `server/models/products.py` — product catalog
-- `server/models/order-items.py` — items attached to orders
-- `server/models/orders.py` — (new) orders table and relationships
+### Customers
+* `GET /customers` - Get all customers
+* `GET /customers/:id` - Get a specific customer
+* `POST /customers` - Create a new customer
+* `PATCH /customers/:id` - Update a customer
+* `DELETE /customers/:id` - Delete a customer
 
-Development
+### Orders
+* `GET /orders` - Get all orders
+* `GET /orders/:id` - Get a specific order
+* `POST /orders` - Create a new order
+* `PATCH /orders/:id` - Update an order
+* `DELETE /orders/:id` - Delete an order
 
-Use the provided `Makefile` for common tasks.
-Activate your virtualenv before running management scripts.
-If you add new models, update `server/seed.py` and add tests in `tests/`.
+### Order Items
+* `GET /order_items` - Get all order items
+* `GET /order_items/:id` - Get a specific order item
+* `POST /order_items` - Create a new order item
+* `PATCH /order_items/:id` - Update an order item
+* `DELETE /order_items/:id` - Delete an order item
 
-Contributing
-1. Fork and create a feature branch.
-2. Make changes and include tests where appropriate.
-3. Open a PR against `main` with a short description of the change.
+## Testing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for branch workflow, migration, and seed instructions.
+Use Postman or curl to test all endpoints. Refer to the individual route implementations for required request body formats.
 
-License
--------
-See the repository license (if any).
+## Project Structure
 
-Next steps / TODO
+```
+market-mtaani/
+├── server/
+│   ├── app.py
+│   ├── models.py
+│   ├── config.py
+│   ├── seed.py
+│   ├── routes/
+│   │   ├── __init__.py
+│   │   ├── user_routes.py
+│   │   ├── business_routes.py
+│   │   ├── product_routes.py
+│   │   ├── customer_routes.py
+│   │   ├── order_routes.py
+│   │   └── order_item_routes.py
+│   ├── instance/
+│   │   └── market_mtaani.db
+│   └── migrations/
+├── client/
+│   ├── public/
+│   ├── src/
+│   ├── package.json
+│   └── node_modules/
+├── Pipfile
+├── Pipfile.lock
+└── README.md
+```
 
-Add API endpoints for orders and order-items.
-Add more tests and CI.
+## Technologies Used
+
+### Backend
+* Flask
+* Flask-SQLAlchemy
+* Flask-Migrate
+* Flask-RESTful
+* SQLAlchemy-Serializer
+
+### Frontend
+* React
+* React Router
+* Axios (or Fetch API)
+
+## License
+
+MIT License
+
+## Authors
