@@ -1,59 +1,30 @@
+
+import os
 from flask import Flask
-from flask_restful import Api
-from flask_migrate import Migrate
-from models import db
 
-from routes.order_item_routes import(
-    OrderItems,
-    OrderItemById, 
-    OrderItemsByOrderId
-)
+from server.models import db
 
-app = Flask(__name__)
 
-# basic configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://username:password@localhost/market_mtaani'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+try:
+	from flask_migrate import Migrate
+except Exception:
+	Migrate = None
 
-db.init_app(app)
-migrate = Migrate(app, db)
-api = Api(app)
 
-# order item crud
-api.add_resource(OrderItems, '/order_items')
-api.add_resource(OrderItemById, '/order_items/<int:id>')
+def create_app(config_object=None):
+	app = Flask(__name__)
+	app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///market.db')
+	app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# nested order-items
-api.add_resource(BusinessTotalRevenue, '/businesses/total_revenue')
+	db.init_app(app)
+	if Migrate is not None:
+		Migrate(app, db)
 
-# aggregate endpoints can be added here
-api.add_resource(OrderItemsByOrderId, '/orders/<int:order_id>/order_items')
+	return app
 
-api.add_resource(ProductTotalSales, '/products/total_sales' )
+
+app = create_app()
+
 
 if __name__ == '__main__':
-    app.run(debug=True)
-#!/usr/bin/env python3
-
-from flask import Flask
-from flask_migrate import Migrate
-from flask_restful import Api
-from config import Config
-from models import db
-
-from routes.user_routes import Users, UserByID
-
-app = Flask(__name__)
-app.config.from_object(Config)
-
-migrate = Migrate(app, db)
-db.init_app(app)
-
-api = Api(app)
-
-# register User routes
-api.add_resource(Users, '/users')
-api.add_resource(UserByID, '/users/<int:id>')
-
-if __name__ == '__main__':
-    app.run(port=5555, debug=True)
+	app.run(debug=True)
