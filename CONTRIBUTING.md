@@ -1,124 +1,69 @@
-# Contributing
+# Contributing to Market Mtaani
 
-This repository uses a branch-per-feature workflow. Keep `main` protected and work on feature branches named using the pattern `feature/Yussuf/<short-description>` (replace `Yussuf` with your brief name when appropriate).
+## Getting Started
 
-1. Setup (recommended)
-
-   - Create a virtual environment and install dependencies (Pipfile present):
-
+1. **Fork the repository** on GitHub
+2. **Clone your fork** locally:
    ```bash
-   python3 -m venv .venv
-   source .venv/bin/activate
-   pip install pipenv
-   pipenv install --dev
-   pipenv run pip install -r <(pipenv lock -r)
+   git clone <repo>
+   cd <folder name>
    ```
 
-   - Alternatively, install from `Pipfile` using `pipenv` or create a `requirements.txt` and use `pip install -r requirements.txt`.
-
-2. Branching & collaboration
-
-   - Create a new feature branch from the latest `main`:
-
+3. **Set up the development environment**:
    ```bash
-   git fetch origin
-   git checkout main
-   git pull origin main
-   git checkout -b feature/Yussuf/short-description
-   ```
-
-   - Push the branch and set upstream:
-
-   ```bash
-   git push -u origin feature/Yussuf/short-description
-   ```
-
-   - Update your branch from remote `main` regularly (two options):
-     - Rebase (keeps linear history):
-
-     ```bash
-     git fetch origin
-     git checkout feature/Yussuf/short-description
-     git rebase origin/main
-     # fix conflicts, then
-     git push --force-with-lease
-     ```
-
-     - Merge (keeps original commit timestamps):
-
-     ```bash
-     git fetch origin
-     git checkout feature/Yussuf/short-description
-     git merge origin/main
-     git push
-     ```
-
-   - Open a Pull Request on GitHub (web) or with the GitHub CLI:
-
-   ```bash
-   gh pr create --fill
-   ```
-
-   - Checkout a collaborator's branch:
-
-   ```bash
-   git fetch origin
-   git checkout -b their-branch origin/their-branch
-   # or for PRs
-   gh pr checkout <number>
-   ```
-
-   - Delete branches after merge:
-
-   ```bash
-   git branch -d feature/Yussuf/short-description   # local
-   git push origin --delete feature/Yussuf/short-description  # remote
-   ```
-
-3. Common git commands
-
-   - List branches: `git branch` (local), `git branch -r` (remote)
-   - Stash work: `git stash` / `git stash pop`
-   - Interactive rebase: `git rebase -i origin/main`
-   - View history: `git log --oneline --graph --decorate`
-
-4. Database migrations & seeding (exact commands)
-
-   - Export FLASK_APP and run migrations (after activating venv/pipenv):
-
-   ```bash
-   export FLASK_APP=server.app
-   flask db init           # only once per repo
-   flask db migrate -m "initial"
+   pipenv install
+   pipenv shell
+   cd server
    flask db upgrade
+   python seed.py
    ```
 
-   - If you update models later:
+## Making Changes
 
+1. **Create a new branch** for your feature:
    ```bash
-   export FLASK_APP=server.app
-   flask db migrate -m "describe change"
-   flask db upgrade
+   git checkout -b feature/your-feature-name
    ```
 
-   - Seed the database (creates sample data):
+2. **Make your changes** following our code standards
 
+3. **Test your changes** thoroughly
+
+4. **Commit your changes**:
    ```bash
-   # from repo root, with venv/pipenv active
-   python server/seed.py
+   git add .
+   git commit -m "Add: brief description of your changes"
    ```
 
-5. Pull request checklist
+## Submitting Changes
 
-   - Branch created from an up-to-date `main`.
-   - Code linted and tests passing (if present).
-   - Migration created if models changed.
-   - Describe changes in the PR body and link any issues.
+1. **Push to your fork**:
+   ```bash
+   git push origin feature/your-feature-name
+   ```
 
-6. Notes & best practices
+2. **Create a Pull Request** on GitHub
 
-   - Use `--force-with-lease` when force-pushing to avoid overwriting others' work.
-   - Use small, focused PRs for easier review.
-   - When in doubt, open a draft PR and ask for feedback.
+3. **Request reviews** from at least 2 team members
 
-If you want, I can also add a `scripts/` helper for common dev commands (venv activation, migrate, seed).
+4. **Address review feedback** if needed
+
+## Code Standards
+
+- Follow existing code structure and naming conventions
+- Add proper error handling for all routes
+- Include validations for user inputs
+- Use meaningful commit messages
+- Test all CRUD operations before submitting
+
+## Commit Message Format
+
+- `Add:` for new features
+- `Fix:` for bug fixes
+- `Update:` for modifications to existing features
+- `Remove:` for deleted features
+- `Docs:` for documentation changes
+
+## Need Help?
+
+Contact the team lead or ask in the project group chat.
