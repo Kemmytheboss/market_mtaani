@@ -1,65 +1,73 @@
-from flask import Blueprint, request, jsonify
-from models import db, Business, Product
+from flask import request, make_response
+from flask_restful import Resource
+from models import db, Business
 
-business_bp = Blueprint('business_bp', __name__)
+class Businesses(Resource):
 
-# CREATE
-@business_bp.route('/businesses', methods=['POST'])
-def create_business():
-    data = request.get_json()
-    required = ['user_id', 'business_name']
-    if not all(field in data for field in required):
-        return jsonify({"error": "Missing required fields"}), 400
+    def get(self):
+        verification_status = request.args.get('verification_status')
+        q = Business.query
 
-    try:
-        new_business = Business(**data)
+        if verification_status:
+            q = q.filter_by(verification_status=verification_status)
+
+        businesses = q.all()
+        response_list = [b.to_dict() for b in businesses]
+
+        return make_response(response_list, 200)
+
+    def post(self):
+        data = request.get_json()
+
+        if not data:
+            return make_response({"error": "No data provided"}, 400)
+
+        required = ['user_id', 'business_name']
+        for field in required:
+            if field not in data:
+                return make_response({"error": f"{field} is required"}, 400)
+
+        new_business = Business(
+            user_id=data['user_id'],
+            business_name=data['business_name'],
+            verification_status=data.get('verification_status'),
+            rating=data.get('rating')
+        )
+
         db.session.add(new_business)
         db.session.commit()
-        return jsonify(new_business.to_dict()), 201
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
-# GET ALL WITH FILTER
-@business_bp.route('/businesses', methods=['GET'])
-def get_businesses():
-    q = Business.query
+        return make_response(new_business.to_dict(), 201)
 
-    verification_status = request.args.get('verification_status')
-    if verification_status:
-        q = q.filter_by(verification_status=verification_status)
 
-    businesses = q.all()
-    return jsonify([b.to_dict() for b in businesses]), 200
+class BusinessByID(Resource):
 
-# GET SINGLE
-@business_bp.route('/businesses/<int:id>', methods=['GET'])
-def get_business(id):
-    business = Business.query.get(id)
-    if not business:
-        return jsonify({"error": "Business not found"}), 404
-    return jsonify(business.to_dict()), 200
+    def get(self, id):
+        business = Business.query.filter_by(vendor_id=id).first()
+        if not business:
+            return make_response({"error": "Business not found"}, 404)
+        return make_response(business.to_dict(), 200)
 
-# PATCH
-@business_bp.route('/businesses/<int:id>', methods=['PATCH'])
-def update_business(id):
-    business = Business.query.get(id)
-    if not business:
-        return jsonify({"error": "Business not found"}), 404
+    def patch(self, id):
+        business = Business.query.filter_by(vendor_id=id).first()
+        if not business:
+            return make_response({"error": "Business not found"}, 404)
 
-    data = request.get_json()
-    for key, val in data.items():
-        setattr(business, key, val)
+        data = request.get_json()
+        if not data:
+            return make_response({"error": "No data provided"}, 400)
 
-    db.session.commit()
-    return jsonify(business.to_dict()), 200
+        for key, value in data.items():
+            setattr(business, key, value)
 
-# DELETE (cascade)
-@business_bp.route('/businesses/<int:id>', methods=['DELETE'])
-def delete_business(id):
-    business = Business.query.get(id)
-    if not business:
-        return jsonify({"error": "Business not found"}), 404
+        db.session.commit()
+        return make_response(business.to_dict(), 200)
 
-    db.session.delete(business)
-    db.session.commit()
-    return jsonify({}), 204
+    def delete(self, id):
+        business = Business.query.filter_by(vendor_id=id).first()
+        if not business:
+            return make_response({"error": "Business not found"}, 404)
+
+        db.session.delete(business)
+        db.session.commit()
+        return make_response({"message": "Business deleted"}, 200)
