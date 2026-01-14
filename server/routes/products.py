@@ -6,10 +6,6 @@ from sqlalchemy.exc import IntegrityError
 class Products(Resource):
 
     def get(self):
-        """
-        GET /products
-        Optional filter: ?business_id=1
-        """
         business_id = request.args.get('business_id')
 
         if business_id:
@@ -23,10 +19,6 @@ class Products(Resource):
         )
 
     def post(self):
-        """
-        POST /products
-        Required: name, price, business_id
-        """
         data = request.get_json()
 
         if not data:
