@@ -1,5 +1,3 @@
-# server/app.py
-
 #!/usr/bin/env python3
 
 from flask import Flask
@@ -8,7 +6,6 @@ from flask_restful import Api
 from config import Config
 from models import db
 
-# Import route resources
 from routes.user_routes import Users, UserByID
 
 app = Flask(__name__)
@@ -19,7 +16,7 @@ db.init_app(app)
 
 api = Api(app)
 
-# Register User routes
+# register User routes
 api.add_resource(Users, '/users')
 api.add_resource(UserByID, '/users/<int:id>')
 

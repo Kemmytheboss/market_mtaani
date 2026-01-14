@@ -8,11 +8,6 @@ from sqlalchemy.exc import IntegrityError
 class Users(Resource):
     
     def get(self):
-        """
-        GET /users
-        Optional query parameter: ?role=vendor
-        Returns all users or filtered by role
-        """
         role = request.args.get('role')
         
         if role:
@@ -30,15 +25,8 @@ class Users(Resource):
         return response
     
     def post(self):
-        """
-        POST /users
-        Creates a new user
-        Required fields: full_name, email, password
-        Optional fields: phone, role, status
-        """
         data = request.get_json()
         
-        # Validate required fields
         if not data:
             response = make_response(
                 {"error": "No data provided"},
@@ -67,7 +55,6 @@ class Users(Resource):
             )
             return response
         
-        # Create new user
         new_user = User(
             full_name=data['full_name'],
             email=data['email'],
@@ -91,12 +78,7 @@ class Users(Resource):
 
 
 class UserByID(Resource):
-    
     def get(self, id):
-        """
-        GET /users/<id>
-        Returns a single user by ID
-        """
         user = User.query.filter_by(user_id=id).first()
         
         if not user:
@@ -116,11 +98,6 @@ class UserByID(Resource):
         return response
     
     def patch(self, id):
-        """
-        PATCH /users/<id>
-        Updates a user by ID
-        Allowed fields: full_name, email, password, phone, role, status
-        """
         user = User.query.filter_by(user_id=id).first()
         
         if not user:
@@ -139,7 +116,6 @@ class UserByID(Resource):
             )
             return response
         
-        # Update allowed fields
         allowed_fields = ['full_name', 'email', 'password', 'phone', 'role', 'status']
         
         for key, value in data.items():
@@ -159,10 +135,6 @@ class UserByID(Resource):
         return response
     
     def delete(self, id):
-        """
-        DELETE /users/<id>
-        Deletes a user by ID
-        """
         user = User.query.filter_by(user_id=id).first()
         
         if not user:
