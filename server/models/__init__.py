@@ -7,11 +7,9 @@ metadata = MetaData(naming_convention={
 
 db = SQLAlchemy(metadata=metadata)
 
-# Import models so they are registered with SQLAlchemy
-# Import dependent models first to avoid mapper resolution issues
-from .vendors import Vendor  # noqa: F401
-from .users import User  # noqa: F401
-from .products import Product  # noqa: F401
-from .customers import Customer  # noqa: F401
-from .orders import Order  # noqa: F401
-from .order_items import OrderItem  # noqa: F401
+from .vendors import Vendor
+from .users import User
+from .products import Product
+from .customers import Customer
+from .orders import Order
+from .order_items import OrderItem
