@@ -84,6 +84,7 @@ class Businesses(Resource):
 
         db.session.delete(business)
         db.session.commit()
+        
 
         return make_response({"message": "Business deleted successfully"}, 200)
 
