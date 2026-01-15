@@ -80,7 +80,7 @@ def seed_data():
         db.session.add_all(users)
         db.session.commit()
         
-        print("✅ Users seeded successfully!")
+        print("Users seeded successfully!")
         
         print("Seeding businesses...")
         
