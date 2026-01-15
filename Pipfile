@@ -15,6 +15,7 @@ ipdb = "*"
 faker = "*"
 sqlalchemy-serializer = "*"
 flask-mail = "*"
+flask-cors = "*"
 
 [dev-packages]
 
