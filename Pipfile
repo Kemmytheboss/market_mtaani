@@ -16,6 +16,7 @@ faker = "*"
 sqlalchemy-serializer = "*"
 flask-mail = "*"
 flask-cors = "*"
+flask-bcrypt = "*"
 
 [dev-packages]
 

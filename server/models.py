@@ -5,6 +5,7 @@ from sqlalchemy import MetaData
 from sqlalchemy.orm import validates
 from sqlalchemy_serializer import SerializerMixin
 from datetime import datetime
+from flask_bcrypt import Bcrypt
 
 metadata = MetaData(
     naming_convention={
@@ -13,12 +14,13 @@ metadata = MetaData(
 )
 
 db = SQLAlchemy(metadata=metadata)
+bcrypt = Bcrypt()
 
 
 class User(db.Model, SerializerMixin):
     __tablename__ = "users"
-   
-    serialize_rules = ("-business.user", "-customer.user")
+    
+    serialize_rules = ("-business.user", "-customer.user", "-password")
     
     user_id = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String, nullable=False)
@@ -48,11 +50,13 @@ class User(db.Model, SerializerMixin):
             raise ValueError("Full name is required")
         return value
     
-    @validates("password")
-    def validate_password(self, key, value):
-        if not value or len(value) < 6:
+    def set_password(self, password):
+        if not password or len(password) < 6:
             raise ValueError("Password must be at least 6 characters long")
-        return value
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+    
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.password, password)
     
     def __repr__(self):
         return f"<User id={self.user_id} email={self.email}>"

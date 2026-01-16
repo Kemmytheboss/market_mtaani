@@ -5,7 +5,7 @@ from flask import Flask, request, make_response, jsonify
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
 from flask_cors import CORS
-from models import db, User, Customer, Order, Product, Business, OrderItem
+from models import db, User, Customer, Order, Product, Business, OrderItem, bcrypt
 from sqlalchemy.exc import IntegrityError
 
 app = Flask(__name__)
@@ -17,6 +17,7 @@ CORS(app, resources={r"/*": {"origins": ["http://localhost:3000", "http://localh
 
 migrate = Migrate(app, db)
 db.init_app(app)
+bcrypt.init_app(app) 
 
 api = Api(app)
 
@@ -65,12 +66,13 @@ class Users(Resource):
         new_user = User(
             full_name=data['full_name'],
             email=data['email'],
-            password=data['password'],
             phone=data.get('phone'),
             role=data.get('role'),
             status=data.get('status')
         )
         
+        new_user.set_password(data['password'])
+
         db.session.add(new_user)
         db.session.commit()
         
@@ -98,7 +100,11 @@ class UserByID(Resource):
         if not data:
             return make_response({"error": "No data provided"}, 400)
         
-        allowed_fields = ['full_name', 'email', 'password', 'phone', 'role', 'status']
+        if 'password' in data:
+            user.set_password(data['password']) 
+            data.pop('password')
+
+        allowed_fields = ['full_name', 'email', 'phone', 'role', 'status']
         
         for key, value in data.items():
             if key in allowed_fields:
@@ -609,6 +615,25 @@ class OrderItemsByOrder(Resource):
         return make_response([item.to_dict() for item in order_items], 200)
 
 api.add_resource(OrderItemsByOrder, '/orders/<int:order_id>/items')
+
+# ============================================
+# Login Route
+# ============================================
+class Login(Resource):
+    def post(self):
+        data = request.get_json()
+        
+        if not data or 'email' not in data or 'password' not in data:
+            return make_response({"error": "Email and password required"}, 400)
+        
+        user = User.query.filter_by(email=data['email']).first()
+        
+        if not user or not user.check_password(data['password']):
+            return make_response({"error": "Invalid email or password"}, 401)
+        
+        return make_response(user.to_dict(), 200)
+
+api.add_resource(Login, '/login')
 
 # ============================================
 # Run Application

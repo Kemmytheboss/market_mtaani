@@ -19,32 +19,21 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            // In a real app, you'd hit a /login endpoint. 
-            // Based on available routes, we might need to query users/verify or similar.
-            // But looking at server/app.py, there is no specific login route, just Users GET/POST.
-            // We will simulate login by fetching all users and matching credentials (NOT SECURE, but matches backend provided).
-            // Ideally we should add a login endpoint.
-
-            // Let's rely on finding the user by email for now or creating a session.
-            // Since I can't easily change the backend logic to add Auth without asking, 
-            // I will assume we can filter by email effectively or fetch all.
-            // Actually, Users GET supports 'role', but not email filter.
-            // Fetching all users to find one is inefficient but necessary given the backend.
-
-            const response = await api.get('/users');
-            const users = response.data;
-            const foundUser = users.find(u => u.email === email && u.password === password);
-
-            if (foundUser) {
-                setUser(foundUser);
-                localStorage.setItem('user', JSON.stringify(foundUser));
+            // Use the /login endpoint
+            const response = await api.post('/login', { email, password });
+            
+            if (response.status === 200) {
+                const userData = response.data;
+                setUser(userData);
+                localStorage.setItem('user', JSON.stringify(userData));
                 return { success: true };
-            } else {
-                return { success: false, error: 'Invalid credentials' };
             }
         } catch (error) {
             console.error("Login error", error);
-            return { success: false, error: error.message };
+            return { 
+                success: false, 
+                error: error.response?.data?.error || 'Invalid email or password' 
+            };
         }
     };
 

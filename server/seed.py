@@ -2,7 +2,7 @@
 # server/seed.py
 
 from app import app
-from models import db, User, Business, Customer, Product, Order, OrderItem
+from models import db, User, Business, Customer, Product, Order, OrderItem, bcrypt
 from datetime import datetime
 
 def seed_data():
@@ -22,7 +22,6 @@ def seed_data():
             User(
                 full_name="Fatuma Mohamed",
                 email="fatuma@marketmtaani.com",
-                password="password123",
                 phone="0712345678",
                 role="vendor",
                 status="active"
@@ -30,7 +29,6 @@ def seed_data():
             User(
                 full_name="Ahmed Hassan",
                 email="ahmed@marketmtaani.com",
-                password="password123",
                 phone="0723456789",
                 role="vendor",
                 status="active"
@@ -38,7 +36,6 @@ def seed_data():
             User(
                 full_name="Halima Ibrahim",
                 email="halima@marketmtaani.com",
-                password="password123",
                 phone="0734567890",
                 role="vendor",
                 status="active"
@@ -46,7 +43,6 @@ def seed_data():
             User(
                 full_name="Amina Ali",
                 email="amina@marketmtaani.com",
-                password="password123",
                 phone="0745678901",
                 role="vendor",
                 status="active"
@@ -54,7 +50,6 @@ def seed_data():
             User(
                 full_name="Hassan Abdi",
                 email="hassan@marketmtaani.com",
-                password="password123",
                 phone="0756789012",
                 role="vendor",
                 status="active"
@@ -62,7 +57,6 @@ def seed_data():
             User(
                 full_name="Grace Wanjiru",
                 email="grace@marketmtaani.com",
-                password="password123",
                 phone="0767890123",
                 role="customer",
                 status="active"
@@ -70,12 +64,14 @@ def seed_data():
             User(
                 full_name="John Kamau",
                 email="john@marketmtaani.com",
-                password="password123",
                 phone="0778901234",
                 role="customer",
                 status="active"
             ),
         ]
+
+        for user in users:
+            user.set_password("password123")
         
         db.session.add_all(users)
         db.session.commit()
